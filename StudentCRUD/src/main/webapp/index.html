@@ -22,7 +22,7 @@
 				</div>
 				
 				<!-- Add Student Modal -->
-				<form action="#" method="post" class="addForm">
+				<form action="/register" method="post" class="addForm" id="addForm">
 					<div class="modal fade" id="add-user-modal">
 						<div class="modal-dialog">
 							<div class="modal-content">
@@ -33,27 +33,27 @@
 						
 									<div class="mb-3">
 										<label for="name">Name</label>
-										<input class="form-control" type="text" name="name" placeholder="Enter your Name" required>
+										<input class="form-control" type="text" name="name" id="name" placeholder="Enter your Name">
 									</div>
 
 									<div class="mb-3">
 										<label for="rollno">RollNo</label>
-										<input class="form-control" type="text" name="rollno" placeholder="Enter your RollNo" required>
+										<input class="form-control" type="text" name="rollno"  id="rollno" placeholder="Enter your RollNo">
 									</div>
 
 									<div class="mb-3">
 										<label for="email">Email</label>
-										<input class="form-control" type="email" name="email" placeholder="Enter your Email" required>
+										<input class="form-control" type="email" name="email" id="email" placeholder="Enter your Email">
 									</div>
 
 									<div class="mb-3">
 										<label for="department">Department</label>
-										<input class="form-control" type="text" name="department" placeholder="Enter your Department" required>
+										<input class="form-control" type="text" name="department" id="department" placeholder="Enter your Department">
 									</div>
 
 									<div class="mb-3">
 										<label for="cgpa">CGPA</label>
-										<input class="form-control" type="number" name="cgpa" placeholder="Enter your Current CGPA" required>
+										<input class="form-control" type="text" name="cgpa" id="cgpa" placeholder="Enter your Current CGPA">
 									</div>
 								
 								</div>
@@ -78,44 +78,109 @@
 						<th>CGPA</th>
 						<th>Actions</th>
 					</thead>
-					<tr>
-						<td>Srihari</td>
-						<td>20P151</td>
-						<td>20p151@kce.ac.in</td>
-						<td>CSE</td>
-						<td>8.99</td>
-						<td>
-							<button class="btn btn-success" type="submit"><i class="fas fa-edit"></i>&nbspEdit</button>
-							<button class="btn btn-danger" type="submit"><i class="fas fa-trash-alt"></i>&nbspDelete</button>
-						</td>
-					</tr>
-					<tr>
-						<td>Srihari</td>
-						<td>20P151</td>
-						<td>20p151@kce.ac.in</td>
-						<td>CSE</td>
-						<td>8.99</td>
-						<td>
-							<button class="btn btn-success" type="submit"><i class="fas fa-edit"></i>&nbspEdit</button>
-							<button class="btn btn-danger" type="submit"><i class="fas fa-trash-alt"></i>&nbspDelete</button>
-						</td>
-					</tr>
+					<tbody class="show-data">
+						
+					</tbody>
+					
 				</table>
 			</div>
 		</div>
 	</div>
 </body>
 
-<!-- bootstrap js -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+
 
 <!-- jquery js -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 
+<!-- bootstrap js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+
+
 <script type="text/javascript">
 	
-	$(".addForm").on("submit", ()=>{
-		alert("Vanakam da Mapla...");
+	// for post when click add
+	$(document).ready(()=>{
+		
+		$(".addForm").on("submit", function(e){
+			
+			e.preventDefault()
+			$.ajax({
+				method:"POST",
+				url:"register",
+				data:new FormData(this),
+				processData:false,
+				contentType:false,
+				success:(result)=>{
+					console.log(result);
+				},
+				error:(error)=>{
+					console.log(error);
+				}
+			})
+		})
+		
+		
+
 	})
+
+	//for get
+	$(document).ready(()=>{
+		$.ajax({
+			method:"GET",
+			url:"register",
+			beforeSend:()=>{
+				
+				$(".show-data").html("Fetching  Data...Please wait");
+				
+				
+			},
+			success:(result)=>{
+				setTimeout(() => {
+					$(".show-data").html("");
+				result.forEach((data)=>{
+					let tableContent=`
+					<tr>
+							<td>${data.name}</td>
+							<td>${data.rollno}</td>
+							<td>${data.email}</td>
+							<td>${data.department}</td>
+							<td>${data.cgpa}</td>
+							<td>
+								<button id="${data.id}" class="btn btn-success edit-student" type="submit"><i class="fas fa-edit"></i>&nbspEdit</button>
+								<button id="${data.id}" class="btn btn-danger delete-student" type="submit"><i class="fas fa-trash-alt"></i>&nbspDelete</button>
+							</td>
+						</tr>
+					`;
+					$(".show-data").append(tableContent);
+					console.log(data);
+				});deleteStudent();
+				}, 3000);
+				
+			},
+			error:(error)=>{
+				$(".show-data").html(error.responseText());
+
+			}
+		})
+	});
+
+	function editStudent(data){
+
+	}
+
+	function deleteStudent(){
+		$(".delete-student").click(function(){
+			let id=$(this).attr("id");
+			$.ajax({
+				method:"DELETE",
+				url:"register?id="+id,
+				success:(result)=>{
+					console.log(result)
+				}
+			})
+		})
+	}
+	
 </script>
 </html>
