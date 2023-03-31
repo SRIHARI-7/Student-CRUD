@@ -10,6 +10,9 @@
 <!-- font awesome link -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+<!-- animate link -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
 </head>
 <body>
 	<div class="container mt-5">
@@ -60,11 +63,14 @@
 								<div class="modal-footer">
 									<button type="submit" class="btn btn-primary">Save</button>
 									<button type="reset" class="btn btn-danger">Reset</button>
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 								</div>
 							</div>
 						</div>
 					</div>
 				</form>
+
+				
 
 
 			</div>
@@ -112,6 +118,7 @@
 				processData:false,
 				contentType:false,
 				success:(result)=>{
+					getAll()
 					console.log(result);
 				},
 				error:(error)=>{
@@ -120,67 +127,112 @@
 			})
 		})
 		
-		
-
+	})
+	
+	$(document).ready(()=>{
+		getAll();
 	})
 
 	//for get
-	$(document).ready(()=>{
-		$.ajax({
-			method:"GET",
-			url:"register",
-			beforeSend:()=>{
-				
-				$(".show-data").html("Fetching  Data...Please wait");
-				
-				
-			},
-			success:(result)=>{
-				setTimeout(() => {
-					$(".show-data").html("");
-				result.forEach((data)=>{
-					let tableContent=`
-					<tr>
-							<td>${data.name}</td>
-							<td>${data.rollno}</td>
-							<td>${data.email}</td>
-							<td>${data.department}</td>
-							<td>${data.cgpa}</td>
-							<td>
-								<button id="${data.id}" class="btn btn-success edit-student" type="submit"><i class="fas fa-edit"></i>&nbspEdit</button>
-								<button id="${data.id}" class="btn btn-danger delete-student" type="submit"><i class="fas fa-trash-alt"></i>&nbspDelete</button>
-							</td>
-						</tr>
-					`;
-					$(".show-data").append(tableContent);
-					console.log(data);
-				});deleteStudent();
-				}, 3000);
-				
-			},
-			error:(error)=>{
-				$(".show-data").html(error.responseText());
+	const getAll=()=>{
+		
+			$.ajax({
+				method:"GET",
+				url:"register",
+				beforeSend:()=>{
+					
+					$(".show-data").html(`<h5 class="pt-2 pb-2 ms-1">Loading Please wait</h5>`);
+					
+					
+				},
+				success:(result)=>{
+					setTimeout(() => {
+						$(".show-data").html("");
+					result.forEach((data)=>{
+						let tableContent=`
+						<tr>
+								<td>${data.name}</td>
+								<td>${data.rollno}</td>
+								<td>${data.email}</td>
+								<td>${data.department}</td>
+								<td>${data.cgpa}</td>
+								<td>
+									<div class="btn-group border" role="group">
+									<button name="${data.id}" class="btn btn-success edit-student"   type="submit"><i class="fas fa-edit"></i>&nbspEdit</button>
+									
+									<button id="${data.id}" class="btn btn-danger delete-student" type="submit"><i class="fas fa-trash-alt"></i>&nbspDelete</button>
+									</div>
+								</td>
+							</tr>
+						`;
+						$(".show-data").append(tableContent);
+						console.log(data);
+					});deleteStudent();
+					}, 1000);
+					
+				},
+				error:(error)=>{
+					console.log(error.responseText);
+					$(".show-data").html(`<h5 class="pt-2 pb-2 ms-1">${error.responseText}</h5>`);
 
-			}
+				}
+			})
+
+			
+		}
+	
+
+
+		function updateStudent(){
+		$(".edit-student").click( function(){
+			
+			let id=$(".edit-student").attr("name");
+			let record=this.parentElement.parentElement.parentElement;
+			console.log(record)
+			
+			$.ajax({
+				method:"GET",
+				url:"student?id="+id,
+				beforeSend:()=>{
+	
+				},
+				success:(result)=>{
+					
+					console.log(result);
+				},
+				error:(error)=>{
+					console.log(error);
+				}
+			})
+			
 		})
-	});
-
-	function editStudent(data){
-
 	}
 
 	function deleteStudent(){
 		$(".delete-student").click(function(){
+			let anim=this.parentElement.parentElement.parentElement;
+			console.log(anim)
 			let id=$(this).attr("id");
+		
 			$.ajax({
 				method:"DELETE",
 				url:"register?id="+id,
 				success:(result)=>{
-					console.log(result)
+					$(anim).addClass("animate__animated animate__bounceOut");
+					setTimeout(()=>{
+						$(anim).remove();
+					},200)
+					
+					console.log(result);
+				},
+				error:(error)=>{
+					console.log(error);
 				}
 			})
 		})
 	}
+
+	
 	
 </script>
 </html>

@@ -8,10 +8,21 @@ public class StudentBean {
 	private String email;
 	private String department;
 	private String cgpa;
+
 	
 	public StudentBean(int id, String name, String rollno, String email, String department, String cgpa) {
 		super();
 		this.id = id;
+		this.name = name;
+		this.rollno = rollno;
+		this.email = email;
+		this.department = department;
+		this.cgpa = cgpa;
+	}
+	
+public StudentBean(String name, String rollno, String email, String department, String cgpa) {
+		
+		this.id = 0;
 		this.name = name;
 		this.rollno = rollno;
 		this.email = email;
@@ -67,6 +78,8 @@ public class StudentBean {
 		super();
 		this.id=id;
 	}
+
+	
 	
 	
 	

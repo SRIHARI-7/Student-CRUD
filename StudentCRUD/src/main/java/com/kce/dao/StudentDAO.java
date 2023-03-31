@@ -48,5 +48,56 @@ public class StudentDAO {
 		}
 		return null;
 	}
+	public StudentBean getById(int id) {
+		try {
+			PreparedStatement statement=con.prepareStatement("SELECT * FROM students WHERE id=?");
+			statement.setInt(1, id);
+			ResultSet rs=statement.executeQuery();
+			StudentBean studentBean=new StudentBean(id, rs.getString("name"), rs.getString("rollno"), rs.getString("email"), rs.getString("department"), rs.getString("cgpa"));
+			return studentBean;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public boolean delete(int id) {
+		try {
+			PreparedStatement statement=con.prepareStatement("DELETE FROM students WHERE id=?");
+			statement.setInt(1, id);
+			
+			int deleted=statement.executeUpdate();
+			System.out.println(deleted);
+			if(deleted==1) {
+				return true;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean update(StudentBean studentBean) {
+		try {
+			PreparedStatement statement=con.prepareStatement("UPDATE students SET name=?, rollno=?, email=?, department=?, cgpa=? WHERE id=?");
+			statement.setString(1, studentBean.getName());
+			statement.setString(2, studentBean.getRollno());
+			statement.setString(3, studentBean.getEmail());
+			statement.setString(4, studentBean.getDepartment());
+			statement.setString(5, studentBean.getCgpa());
+			statement.setInt(6, studentBean.getId());
+			
+			int updated=statement.executeUpdate();
+			System.out.println(updated);
+			if(updated==1) {
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	
 
 }

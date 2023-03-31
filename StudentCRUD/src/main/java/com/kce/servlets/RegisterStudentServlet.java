@@ -31,17 +31,36 @@ public class RegisterStudentServlet extends HttpServlet {
 		PrintWriter out=response.getWriter();
 		StudentDAO studentDAO=new StudentDAO();
 		List<StudentBean> students=studentDAO.getAllData();
-		if(students.size()==0) {
-			response.setContentType("application/json");
-			response.setStatus(404);
-			out.print("Record Not Found");
-		}
-		else {
-			response.setContentType("application/json");
-			response.setStatus(200);
-			
-			out.print(new Gson().toJson(students));
-		}
+		
+		//int id=Integer.parseInt(request.getParameter("id"));
+		//if(id==0) {
+			if(students.size()==0) {
+				response.setContentType("application/json");
+				response.setStatus(404);
+				out.print("Record Not Found");
+			}
+			else {
+				response.setContentType("application/json");
+				response.setStatus(200);
+				
+				out.print(new Gson().toJson(students));
+			}
+		//}
+		/*else {
+			StudentBean studentBean=studentDAO.getById(id);
+			if(studentBean!=null) {
+				response.setContentType("application/json");
+				response.setStatus(200);
+				
+				out.print(new Gson().toJson(studentBean));
+			}
+			else {
+				response.setContentType("application/json");
+				response.setStatus(404);
+				out.print("Record Not Found");
+			}
+		}*/
+		
 	}
 
 	
@@ -69,7 +88,43 @@ public class RegisterStudentServlet extends HttpServlet {
 	
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out=response.getWriter();
-		out.print(request.getParameter("id"));
+		int id=Integer.parseInt(request.getParameter("id"));
+		StudentDAO studentDAO=new StudentDAO();
+		boolean isDeleted=studentDAO.delete(id);
+		if(isDeleted) {
+			out.print("deleted");
+		}
+		else {
+			out.print("deletion failed");
+		}
+		
+	}
+	
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out=response.getWriter();
+		
+		int id=Integer.parseInt(request.getParameter("id"));
+		String name=request.getParameter("name");
+		String rollno=request.getParameter("rollno");
+		String email=request.getParameter("email");
+		String department=request.getParameter("department");
+		String cgpa=request.getParameter("cgpa");
+		StudentBean studentBean=new StudentBean(id, name, rollno, email, department, cgpa);
+		StudentDAO studentDAO=new StudentDAO();
+		boolean isUpdated=studentDAO.update(studentBean);
+		if(isUpdated) {
+			out.print("updated");
+			response.setContentType("application/json");
+			response.setStatus(200);
+			
+			out.print(new Gson().toJson(studentBean));
+		}
+		else {
+			out.print("updation failed");
+			response.setContentType("application/json");
+			response.setStatus(404);
+			out.print("Record Not Found");
+		}
 	}
 
 }
